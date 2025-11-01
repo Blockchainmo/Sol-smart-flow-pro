@@ -1,24 +1,24 @@
-// startup-notify.js — sends message to Telegram when bot turns on
+// startup-notify.js
+require("dotenv").config();
 const axios = require("axios");
 
-const BOT_TOKEN = process.env.TG_BOT_TOKEN;
-const GROUP_CHAT_ID = process.env.GROUP_CHAT_ID;
+const token = process.env.TG_BOT_TOKEN; // your Telegram bot token
+const adminId = process.env.ADMIN_USER_IDS; // your Telegram user ID or group ID
 
-(async () => {
+async function sendStartupMessage() {
+  const now = new Date().toLocaleString();
+  const message = `✅ Sol Smart Flow Pro is now LIVE!\n🕒 Started at: ${now}`;
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+
   try {
-    if (!BOT_TOKEN || !GROUP_CHAT_ID) {
-      console.log("Missing Telegram info, skipping message.");
-      process.exit(0);
-    }
-
-    const message = "✅ Sol Smart Flow Pro V2 is online and tracking wallets live!";
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-    await axios.post(url, { chat_id: GROUP_CHAT_ID, text: message });
-
-    console.log("Message sent to Telegram ✅");
-    process.exit(0);
-  } catch (err) {
-    console.log("Could not send message ❌", err.message);
-    process.exit(0);
+    await axios.post(url, {
+      chat_id: adminId,
+      text: message,
+    });
+    console.log("✅ Startup message sent successfully!");
+  } catch (error) {
+    console.error("❌ Failed to send startup message:", error.message);
   }
-})();
+}
+
+sendStartupMessage();
